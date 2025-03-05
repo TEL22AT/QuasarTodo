@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title>
-          <q-btn flat dense round aria-label="Home" @click="$router.push('/')">
+          <q-btn flat dense round aria-label="Home" @click="$router.push('/movie-blog')">
             <q-icon name="home" />
           </q-btn>
           Movie Blog
@@ -79,7 +79,7 @@
           </q-avatar>
           <q-menu>
             <q-list style="min-width: 200px">
-              <q-item clickable v-close-popup>
+              <q-item clickable to="/profile" v-close-popup>
                 <q-item-section>View Profile</q-item-section>
               </q-item>
               <q-item clickable v-close-popup>
@@ -105,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue'
 
-const search = ref("");
+const search = ref('')
 </script>
