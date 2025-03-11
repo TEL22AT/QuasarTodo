@@ -1,6 +1,11 @@
 const routes = [
   {
     path: '/',
+    component: () => import('layouts/MovieLayout.vue'),
+    children: [{ path: '', component: () => import('pages/MovieBlog.vue') }],
+  },
+  {
+    path: '/todo',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },
@@ -8,17 +13,6 @@ const routes = [
     path: '/profile',
     component: () => import('layouts/MovieLayout.vue'),
     children: [{ path: '', component: () => import('pages/ProfilePage.vue') }],
-  },
-  {
-    path: '/movie-blog',
-    component: () => import('layouts/MovieLayout.vue'),
-    children: [
-      {
-        path: '',
-        component: () => import('pages/MovieBlog.vue'),
-        name: 'MovieBlog',
-      },
-    ],
   },
 
   // Always leave this as last one,

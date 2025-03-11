@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title>
-          <q-btn flat dense round aria-label="Home" @click="$router.push('/movie-blog')">
+          <q-btn flat dense round aria-label="Home" @click="$router.push('/')">
             <q-icon name="home" />
           </q-btn>
           Movie Blog
@@ -79,6 +79,9 @@
           </q-avatar>
           <q-menu>
             <q-list style="min-width: 200px">
+              <q-item clickable v-close-popup @click="loginUser">
+                <q-item-section>Login</q-item-section>
+              </q-item>
               <q-item clickable to="/profile" v-close-popup>
                 <q-item-section>View Profile</q-item-section>
               </q-item>
@@ -89,7 +92,7 @@
                 <q-item-section>Settings</q-item-section>
               </q-item>
               <q-separator />
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup @click="logoutUser">
                 <q-item-section>Logout</q-item-section>
               </q-item>
             </q-list>
@@ -106,6 +109,17 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useAuth0 } from '@auth0/auth0-vue'
+
+const { loginWithRedirect, logout } = useAuth0()
+
+function loginUser() {
+  loginWithRedirect()
+}
+
+function logoutUser() {
+  logout()
+}
 
 const search = ref('')
 </script>
