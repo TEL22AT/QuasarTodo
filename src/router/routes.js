@@ -2,7 +2,10 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MovieLayout.vue'),
-    children: [{ path: '', component: () => import('pages/MovieBlog.vue') }],
+    children: [
+      { path: '', component: () => import('pages/MovieBlog.vue') },
+      { path: 'movie', component: () => import('pages/MovieDetail.vue') },
+    ],
   },
   {
     path: '/todo',
