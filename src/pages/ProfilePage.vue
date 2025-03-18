@@ -13,9 +13,6 @@
   <h2>Movie Table</h2>
   {{ movieList[0] }}
   <br /><br />
-  <!-- id: {{ movieList[0]._id }} <br />title: {{ movieList[0].title }} <br />director:
-  {{ movieList[0].director }} <br />
-  userId: {{ movieList[0].userId }} -->
 
   <q-btn @click="deleteMovie()">Delete</q-btn>
   <q-btn>Modify Movie Entry</q-btn>
@@ -35,14 +32,15 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useAuth0 } from '@auth0/auth0-vue'
 
-const { isAuthenticated, user } = useAuth0()
+const { isAuthenticated, user, idTokenClaims } = useAuth0()
 
 const $q = useQuasar()
 
+const jwt = ref('')
 const movieList = ref([])
 const selected = ref([])
 const columns = [
@@ -62,7 +60,11 @@ const columns = [
 
 const fetchMovies = async () => {
   try {
-    const response = await fetch('/api/movies')
+    const response = await fetch('/api/movies', {
+      headers: {
+        Authorization: `Bearer ${jwt.value}`,
+      },
+    })
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
@@ -103,6 +105,15 @@ const deleteMovie = async () => {
   }
 }
 onMounted(async () => {
-  await fetchMovies()
+  if (isAuthenticated.value) {
+    jwt.value = idTokenClaims.value.__raw
+    await fetchMovies()
+  }
+})
+watch(isAuthenticated.value, (newVal) => {
+  if (newVal) {
+    jwt.value = idTokenClaims.value.__raw
+    fetchMovies()
+  }
 })
 </script>
