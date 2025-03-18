@@ -18,4 +18,4 @@ const checkJwt = expressjwt({
 })
 
 // Commenting out the export for now
-// export default checkJwt;
+export default checkJwt
