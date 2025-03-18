@@ -84,6 +84,9 @@ const deleteMovie = async () => {
     try {
       const response = await fetch(`/api/movies/${movie._id}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${jwt.value}`,
+        },
       })
       if (!response.ok) {
         throw new Error('Network response was not ok')
