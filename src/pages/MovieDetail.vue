@@ -20,6 +20,7 @@
           <p>Production countries: {{ productionCountries }}</p>
         </div>
       </div>
+      <q-btn label="Add to Favorites" @click="addToFavorites(movie)" icon="add" />
       <q-rating v-model="rating" @click="addRating" />
     </div>
   </div>
@@ -27,15 +28,20 @@
 
 <script setup>
 import { ref } from 'vue'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAuth0 } from '@auth0/auth0-vue'
+import { useQuasar } from 'quasar'
 
+const { isAuthenticated, idTokenClaims } = useAuth0()
+
+const $q = useQuasar()
 const route = useRoute()
 const movie = ref(null)
-const favoriteMovie = ref()
 const spokenLanguages = ref('')
 const productionCompanies = ref('')
 const productionCountries = ref('')
+const jwt = ref('')
 
 onMounted(async () => {
   try {
@@ -75,16 +81,51 @@ onMounted(async () => {
 
 const rating = ref(0)
 
+async function addToFavorites(movie) {
+  try {
+    const response = await fetch('/api/movies', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwt.value}`,
+      },
+      body: JSON.stringify({
+        title: movie.title,
+        director: movie.director,
+        year: movie.release_date.split('-')[0],
+        movieId: movie.id,
+        ImdbRate: movie.vote_average,
+        personalRating: 0,
+      }),
+    })
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    $q.notify({
+      color: 'positive',
+      position: 'bottom',
+      message: 'Movie added to favorites',
+    })
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      position: 'bottom',
+      message: 'Error adding movie to favorites',
+    })
+    console.error('Error fetching movies:', error)
+  }
+}
 async function addRating() {
   console.log('Add rating')
   console.log(rating)
   try {
-    const response = await fetch('/api/movies/' + favoriteMovie.value._id, {
+    const response = await fetch('/api/movies/' + movie.value.id, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwt.value}`,
       },
-      body: JSON.stringify({ ImdbRate: rating.value }),
+      body: JSON.stringify({ personalRating: rating.value }),
     })
     if (!response.ok) {
       throw new Error('Network response was not ok')
@@ -93,6 +134,17 @@ async function addRating() {
     console.error('Error fetching movies:', error)
   }
 }
+
+onMounted(async () => {
+  if (isAuthenticated.value) {
+    jwt.value = idTokenClaims.value.__raw
+  }
+})
+watch(isAuthenticated.value, (newVal) => {
+  if (newVal) {
+    jwt.value = idTokenClaims.value.__raw
+  }
+})
 </script>
 
 <style scoped></style>
