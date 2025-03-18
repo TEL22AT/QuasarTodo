@@ -18,21 +18,20 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'A simple Express Movie API',
     },
-    // Commenting out security schemes and security requirements
-    // components: {
-    //   securitySchemes: {
-    //     bearerAuth: {
-    //       type: "http",
-    //       scheme: "bearer",
-    //       bearerFormat: "JWT",
-    //     },
-    //   },
-    // },
-    // security: [
-    //   {
-    //     bearerAuth: [],
-    //   },
-    // ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   apis: ['./routes/*.js'], // paths to the API docs
 }
