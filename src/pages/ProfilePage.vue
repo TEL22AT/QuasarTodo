@@ -82,7 +82,7 @@ const deleteMovie = async () => {
   }
   for (const movie of selected.value) {
     try {
-      const response = await fetch(`/api/movies/${movie._id}`, {
+      const response = await fetch(`/api/movies/${movie.movieId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${jwt.value}`,
