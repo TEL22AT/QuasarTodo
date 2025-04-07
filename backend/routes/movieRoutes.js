@@ -17,13 +17,9 @@ const router = express.Router()
  *             type: object
  *             required:
  *               - title
- *               - director
- *               - userId
  *               - movieId
  *             properties:
  *               title:
- *                 type: string
- *               userId:
  *                 type: string
  *               director:
  *                 type: string
