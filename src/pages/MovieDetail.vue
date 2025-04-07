@@ -20,8 +20,12 @@
           <p>Production countries: {{ productionCountries }}</p>
         </div>
       </div>
-      <q-btn label="Add to Favorites" @click="addToFavorites(movie)" icon="add" />
-      <q-rating v-model="rating" @click="addRating" />
+      <div v-if="!matchingMovie">
+        <q-btn label="Add to Favorites" @click="addToFavorites(movie)" icon="add" />
+      </div>
+      <div v-else>
+        <q-rating v-model="rating" @click="addRating" />
+      </div>
     </div>
   </div>
 </template>
@@ -42,6 +46,7 @@ const spokenLanguages = ref('')
 const productionCompanies = ref('')
 const productionCountries = ref('')
 const jwt = ref('')
+const matchingMovie = ref(null)
 
 onMounted(async () => {
   try {
@@ -77,9 +82,31 @@ onMounted(async () => {
         .join(', ')
     }
   }
+  if (isAuthenticated.value) {
+    jwt.value = idTokenClaims.value.__raw
+    fetchMatchingMovie()
+  }
 })
 
 const rating = ref(0)
+
+async function fetchMatchingMovie() {
+  try {
+    const response = await fetch(`/api/movies/${route.params.id}`, {
+      headers: {
+        Authorization: `Bearer ${jwt.value}`,
+      },
+    })
+    if (response.ok) {
+      matchingMovie.value = await response.json()
+    } else {
+      matchingMovie.value = null
+    }
+  } catch (error) {
+    console.error('Error fetching movie:', error)
+    matchingMovie.value = null
+  }
+}
 
 async function addToFavorites(movie) {
   try {
@@ -135,14 +162,10 @@ async function addRating() {
   }
 }
 
-onMounted(async () => {
-  if (isAuthenticated.value) {
-    jwt.value = idTokenClaims.value.__raw
-  }
-})
 watch(isAuthenticated.value, (newVal) => {
   if (newVal) {
     jwt.value = idTokenClaims.value.__raw
+    fetchMatchingMovie()
   }
 })
 </script>
